@@ -18,4 +18,5 @@ object ConfigurationConstant {
 
     //user_id = hashed Eamil
     const val USER_ID = "email"
+    const val USER_PASS = "password"
 }

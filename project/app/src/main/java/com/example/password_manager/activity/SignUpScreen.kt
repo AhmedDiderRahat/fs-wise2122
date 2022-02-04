@@ -147,6 +147,7 @@ class SignUpScreen : AppCompatActivity() {
     private fun saveLocalSessions(userName: String){
         editor.apply{
             putString(ConfigurationConstant.USER_ID, userName)
+            putBoolean(ConfigurationConstant.LOGIN_STATUS, true)
             Log.d(TAG, "saveLocalSessions: Store to local storage")
             apply()
         }
