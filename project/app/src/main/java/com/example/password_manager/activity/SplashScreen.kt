@@ -13,7 +13,7 @@ import kotlinx.coroutines.*;
 
 /*
 * Splash Screen of the app. Execute for three second
-* Ahmed Dider Rahat- 4 th Feb 2020
+* Ahmed Dider Rahat- 4 th Feb 2022
 */
 
 class SplashScreen : AppCompatActivity() {

@@ -16,7 +16,6 @@ class LogIn : AppCompatActivity() {
     val TAG = "LogInScreen"
     private lateinit var binding: ActivityLoginPageBinding
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,16 +27,14 @@ class LogIn : AppCompatActivity() {
 
             Log.d(TAG, "password length: ${binding.etPassword.length()}")
 
-            // editText1.setSelection(position)
-
-            if (binding.ivPasswordHideShow.getTag().toString().equals("hide")) {
-                binding.ivPasswordHideShow.setTag("show")
+            if (binding.ivPasswordHideShow.tag.toString().equals("hide")) {
+                binding.ivPasswordHideShow.tag = "show"
                 binding.etPassword.transformationMethod =
                     HideReturnsTransformationMethod.getInstance()
 
                 binding.ivPasswordHideShow.setImageResource(R.drawable.show_password)
             } else {
-                binding.ivPasswordHideShow.setTag("hide")
+                binding.ivPasswordHideShow.tag = "hide"
                 binding.etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
                 binding.ivPasswordHideShow.setImageResource(R.drawable.hide_password)
             }
@@ -54,10 +51,9 @@ class LogIn : AppCompatActivity() {
         }
 
         binding.btnSignup.setOnClickListener {
-            //val intent = Intent(this, SignUpScreen::class.java)
+            val intent = Intent(this, SignUpScreen::class.java)
             startActivity(intent)
         }
-
 
     }
 }
