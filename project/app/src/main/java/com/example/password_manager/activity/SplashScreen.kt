@@ -7,9 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.es_job_manager.utilities.ConfigurationConstant
 import com.example.password_manager.R
-
 import kotlinx.coroutines.*;
-
 
 /*
 * Splash Screen of the app. Execute for three second
@@ -19,17 +17,17 @@ import kotlinx.coroutines.*;
 class SplashScreen : AppCompatActivity() {
     private lateinit var mScope: CoroutineScope
     private lateinit var sharedPref: SharedPreferences
-
-    val TAG = "SplashScreen"
+    private lateinit var editor: SharedPreferences.Editor
+    private val TAG = "SplashScreen"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
         sharedPref = getSharedPreferences(ConfigurationConstant.LOGIN_PREFERENCE, MODE_PRIVATE)
-
+        editor = sharedPref.edit()
         mScope = CoroutineScope(Dispatchers.IO)
-        withCoroutine(ConfigurationConstant.SPLASH_SCREEN_DURATION)
+        encryptionProcess()
     }
 
     //Coroutine initializer
@@ -62,6 +60,32 @@ class SplashScreen : AppCompatActivity() {
         )
 
         launchNextScreen(intent)
+    }
+
+    private fun getRandomString(length: Int) : String {
+        val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"
+        return (1..length)
+            .map { charset.random() }
+            .joinToString("")
+    }
+
+    private fun getAESKey(): String? {
+        return sharedPref.getString(ConfigurationConstant.CRYPTO_KEY, "")
+    }
+
+    private fun encryptionProcess(){
+        // check key is stored
+        if (getAESKey().equals("")){
+            // key generate
+            var key = getRandomString(16)
+            Log.d(TAG, "encryptionProcess: $key")
+            editor.apply{
+                putString(ConfigurationConstant.CRYPTO_KEY, key)
+                apply()
+            }
+        }
+
+        withCoroutine(ConfigurationConstant.SPLASH_SCREEN_DURATION)
     }
 }
 

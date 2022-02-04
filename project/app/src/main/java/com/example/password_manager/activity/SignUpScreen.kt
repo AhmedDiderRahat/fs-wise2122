@@ -1,7 +1,9 @@
 package com.example.password_manager.activity
 
-import android.app.DatePickerDialog
+
 import android.content.Intent
+import android.content.SharedPreferences
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
@@ -9,12 +11,14 @@ import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.es_job_manager.utilities.ConfigurationConstant
 import com.example.password_manager.R
 import com.example.password_manager.databinding.ActivitySignUpBinding
+import com.example.password_manager.utilities.AESUtils
 
-import kotlinx.coroutines.*
-import java.lang.Exception
-import java.util.*
+
+import javax.crypto.*
+
 
 /*
 * Sign-up process of the app.
@@ -25,13 +29,15 @@ class SignUpScreen : AppCompatActivity() {
 
     val TAG = "SignUpScreen"
 
-
     lateinit var binding: ActivitySignUpBinding
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySignUpBinding.inflate(layoutInflater)
+
+        sharedPreferences = getSharedPreferences(ConfigurationConstant.LOGIN_PREFERENCE, MODE_PRIVATE)
 
         val view: View = binding.root
         setContentView(view)
@@ -70,9 +76,22 @@ class SignUpScreen : AppCompatActivity() {
             } else if (password.equals("")) {
                 binding.etPassword.setError("Enter Passwrod")
             } else {
-                //val user_data = UserData(first_name, last_name, birth_date, total_days.toInt(), 0)
-                //registerUser(user_data, email, password)
-                //Log.d(TAG, "data: $first_name $last_name $birth_date $email $password")
+
+                var email = "adraht@gmail.com"
+
+                var fd = AESUtils()
+
+                var aesKey = "IoTBnyDozuC8IOMz" // sharedPreferences.getString(ConfigurationConstant.CRYPTO_KEY, "")
+
+                var my_chipar = fd.cipherEncrypt(aesKey, email)
+
+                var my_plain = my_chipar?.let { it1 -> fd.cipherDecrypt(aesKey, it1) }
+
+                if (my_plain != null) {
+                    if (my_chipar != null) {
+                        Log.d(TAG, "password: $aesKey, ${my_chipar.length}, ${my_plain.length}")
+                    }
+                }
             }
         }
     }
@@ -83,4 +102,7 @@ class SignUpScreen : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+
+
 }

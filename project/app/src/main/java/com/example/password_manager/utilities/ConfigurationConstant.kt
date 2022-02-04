@@ -12,4 +12,7 @@ object ConfigurationConstant {
     // to maintain the login status
     const val LOGIN_PREFERENCE = "login_pref"
     const val LOGIN_STATUS = "log_in_status"
+
+    // AES key
+    const val CRYPTO_KEY = "aes_key"
 }
