@@ -15,4 +15,7 @@ object ConfigurationConstant {
 
     // AES key
     const val CRYPTO_KEY = "aes_key"
+
+    //user_id = hashed Eamil
+    const val USER_ID = "email"
 }
