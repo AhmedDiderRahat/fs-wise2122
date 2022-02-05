@@ -8,7 +8,7 @@ class AESEncryption {
     private val TAG = "AESEncryption"
 
     // Encryption process
-    public fun encryption(key: String, message:String): String{
+    fun encryption(key: String, message:String): String{
         try {
             return AESCrypt.encrypt(key, message)
         } catch (e: Exception) {
@@ -18,7 +18,7 @@ class AESEncryption {
         return ""
     }
 
-    public fun decryption(key: String, message:String):String{
+    fun decryption(key: String, message:String):String{
         try {
             return AESCrypt.decrypt(key, message)
         }catch (e: Exception){

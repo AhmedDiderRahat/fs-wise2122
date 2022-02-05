@@ -137,6 +137,5 @@ class LandingPage : AppCompatActivity() {
     private fun addNewPageInit(){
         val intent = Intent(this, AddNewScreen::class.java)
         startActivity(intent)
-        finish()
     }
 }
