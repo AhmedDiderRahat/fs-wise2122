@@ -11,9 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.es_job_manager.utilities.ConfigurationConstant
 import com.example.password_manager.R
-import com.example.password_manager.beans.UserData
 import com.example.password_manager.databinding.ActivityLoginPageBinding
-import com.example.password_manager.utilities.AESUtils
+import com.example.password_manager.utilities.AESEncryption
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
@@ -64,12 +63,12 @@ class LogIn : AppCompatActivity() {
         }
 
         binding.btnLogin.setOnClickListener {
-            var encryptionObject = AESUtils()
+            var encryptionObject = AESEncryption()
             var user_email = binding.etEmail.text.toString()
             var user_password = binding.etPassword.text.toString()
 
-            var emailCipher = encryptionObject.cipherEncrypt(AES_KEY, user_email)
-            var passwordCipher = encryptionObject.cipherEncrypt(AES_KEY, user_password)
+            var emailCipher = encryptionObject.encryption(AES_KEY, user_email)
+            var passwordCipher = encryptionObject.encryption(AES_KEY, user_password)
 
             emailCipher?.let { it1 ->
                 if (passwordCipher != null) {

@@ -15,7 +15,6 @@ import com.example.password_manager.R
 import com.example.password_manager.beans.UserData
 import com.example.password_manager.databinding.ActivitySignUpBinding
 import com.example.password_manager.utilities.AESEncryption
-import com.example.password_manager.utilities.AESUtils
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
