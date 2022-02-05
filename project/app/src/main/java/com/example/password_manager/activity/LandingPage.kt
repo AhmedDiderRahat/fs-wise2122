@@ -45,25 +45,6 @@ class LandingPage : AppCompatActivity() {
         // load user data
         loadUserName()
 
-        binding.btnClick.setOnClickListener {
-            var encryptDecryptObj = AESEncryption()
-
-            var plain = binding.etInput.text
-            var cipher = encryptDecryptObj.encryption(AES_KEY, plain.toString())
-
-            Log.d(TAG, "onCreate: $plain->$cipher")
-        }
-
-        binding.btnClick2.setOnClickListener {
-            var key = "vacoder"
-
-            var encryptDecryptObj = AESEncryption()
-
-            var cipher = binding.etInput.text
-            var plain = encryptDecryptObj.decryption(AES_KEY, cipher.toString())
-
-            Log.d(TAG, "onCreate: $cipher->$plain")
-        }
 
         binding.btnLogout.setOnClickListener {
             showDialog()
