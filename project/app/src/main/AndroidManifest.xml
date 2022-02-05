@@ -24,6 +24,7 @@
         <activity android:name=".activity.LandingPage" />
         <activity android:name=".activity.LogIn" />
         <activity android:name=".activity.SignUpScreen" />
+        <activity android:name=".activity.AddNewScreen" />
 
     </application>
 

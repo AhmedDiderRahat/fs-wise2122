@@ -14,6 +14,7 @@ import com.example.es_job_manager.utilities.ConfigurationConstant
 import com.example.password_manager.R
 import com.example.password_manager.beans.UserData
 import com.example.password_manager.databinding.ActivitySignUpBinding
+import com.example.password_manager.utilities.AESEncryption
 import com.example.password_manager.utilities.AESUtils
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -85,10 +86,10 @@ class SignUpScreen : AppCompatActivity() {
             } else if (password.equals("")) {
                 binding.etPassword.setError("Enter Passwrod")
             } else {
-                var encryptionObject = AESUtils()
+                var encryptionObject = AESEncryption()
 
-                var emailCipher = encryptionObject.cipherEncrypt(AES_KEY, email)
-                var passwordCipher = encryptionObject.cipherEncrypt(AES_KEY, password)
+                var emailCipher = encryptionObject.encryption(AES_KEY, email)
+                var passwordCipher = encryptionObject.encryption(AES_KEY, password)
 
                 val userData =
                     passwordCipher?.let { it1 -> emailCipher?.let { it2 ->
