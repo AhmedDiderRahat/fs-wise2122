@@ -6,15 +6,27 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.es_job_manager.utilities.ConfigurationConstant
 import com.example.password_manager.R
+import com.example.password_manager.adapter.StoreDataAdapter
+import com.example.password_manager.beans.StoreData
+
 import com.example.password_manager.databinding.ActivityLandingPageBinding
 import com.example.password_manager.utilities.AESEncryption
-import com.google.android.material.snackbar.Snackbar
+
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 /*
 * Splash Screen of the app. Execute for three second
@@ -27,8 +39,13 @@ class LandingPage : AppCompatActivity() {
     lateinit var binding: ActivityLandingPageBinding
     lateinit var sharedPreferences: SharedPreferences
     lateinit var AES_KEY: String
-    private val userCollectionRef = Firebase.firestore.collection("user_data")
+    private val userCollectionRef = Firebase.firestore.collection("all_data_storage")
     lateinit var editor: SharedPreferences.Editor
+    lateinit var USER_ID: String
+
+    lateinit var recyclerView: RecyclerView
+    lateinit var dataList: ArrayList<StoreData>
+    lateinit var dataAdapter: StoreDataAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +58,19 @@ class LandingPage : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(ConfigurationConstant.LOGIN_PREFERENCE, MODE_PRIVATE)
         editor = sharedPreferences.edit()
         AES_KEY = sharedPreferences.getString(ConfigurationConstant.CRYPTO_KEY, "").toString()
+        USER_ID = sharedPreferences.getString(ConfigurationConstant.USER_ID, "").toString()
+
+        // setup recycler view
+        recyclerView = binding.rvAllData
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        dataList = arrayListOf()
+
+        dataAdapter = StoreDataAdapter(dataList)
+        recyclerView.adapter = dataAdapter
 
         // load user data
         loadUserName()
-
 
         binding.btnLogout.setOnClickListener {
             showDialog()
@@ -52,6 +78,39 @@ class LandingPage : AppCompatActivity() {
 
         binding.btnAddNew.setOnClickListener {
             addNewPageInit()
+        }
+
+        loadAppData()
+    }
+
+    // retrieve from fire-store
+    private fun loadAppData() = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val querySnapshot = userCollectionRef
+                .whereEqualTo(ConfigurationConstant.UID, USER_ID)
+                .get().await()
+
+            Log.d(TAG, "loadAppData: ${querySnapshot.size()}")
+
+            withContext(Dispatchers.Main){
+                for (document in querySnapshot.documents){
+                    val storeData = document.toObject<StoreData>()
+                    //if (storeData != null) {
+                    if (storeData != null) {
+                        dataList.add(storeData)
+                    }
+                    //}
+                    //Log.d(TAG, "loadAppData: ${document.data}")
+                    //Log.d(TAG, "loadAppData: ${storeData.toString()}")
+                    //document.toObject(StoreData::class.java)?.let { dataList.add(it) }
+                }
+
+                Log.d(TAG, "loadAppData: ${dataList.size}")
+
+                dataAdapter.notifyDataSetChanged()
+            }
+        }catch (e: Exception){
+            Log.e(TAG, "loadAppDataError: ${e.toString()}")
         }
     }
 
@@ -76,7 +135,7 @@ class LandingPage : AppCompatActivity() {
     }
 
     // Process all logout procedure
-    private fun logoutProcess(){
+    private fun logoutProcess() {
         // unset all session data
         editor.apply {
             putString(ConfigurationConstant.USER_ID, "")
@@ -98,7 +157,6 @@ class LandingPage : AppCompatActivity() {
             Log.d(TAG, "loadUserName: $key, $emailCipher")
 
             var email = emailCipher?.let { decryptionObject.decryption(AES_KEY, it) }
-
             Log.d(TAG, "loadUserName: $email")
             
             binding.tvUserName.text = email.toString()
