@@ -30,8 +30,8 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 /*
-* Sign-up process of the app.
-* Ahmed Dider Rahat- 4th Feb 2022
+* Add/Update data process of the app.
+* Ahmed Dider Rahat- 5th Feb 2022
 */
 
 class AddNewScreen : AppCompatActivity() {

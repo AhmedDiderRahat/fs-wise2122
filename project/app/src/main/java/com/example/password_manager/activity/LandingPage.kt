@@ -29,7 +29,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 /*
-* Splash Screen of the app. Execute for three second
+* Landing Page of the app.
 * Ahmed Dider Rahat- 4 th Feb 2022
 */
 

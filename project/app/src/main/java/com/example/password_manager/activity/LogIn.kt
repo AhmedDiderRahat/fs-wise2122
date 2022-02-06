@@ -22,6 +22,10 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
+/*
+* Login process of the app.
+* Ahmed Dider Rahat- 4th Feb 2022
+*/
 
 class LogIn : AppCompatActivity() {
     val TAG = "LogInScreen"

@@ -4,9 +4,13 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.password_manager.adapter.StoreDataAdapter.OnItemClickListener
 import com.example.password_manager.beans.StoreData
 import com.example.password_manager.databinding.LayoutRvItemsBinding
+
+/*
+* Adapter for each item of the landing page.
+* Ahmed Dider Rahat- 5th Feb 2022
+*/
 
 class StoreDataAdapter (private val storeList: ArrayList<StoreData>,
                         private val onItemClickListener: OnItemClickListener)

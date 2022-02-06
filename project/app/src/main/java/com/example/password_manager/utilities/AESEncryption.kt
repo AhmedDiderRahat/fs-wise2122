@@ -4,6 +4,11 @@ import android.util.Log
 import com.scottyab.aescrypt.AESCrypt
 import java.lang.Exception
 
+/*
+* All the encryption/decryption process of the app.
+* Ahmed Dider Rahat- 5th Feb 2022
+*/
+
 class AESEncryption {
     private val TAG = "AESEncryption"
 
