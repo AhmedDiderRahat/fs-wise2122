@@ -32,6 +32,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/btn_view"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:src="@drawable/view"
@@ -39,12 +40,12 @@
                 android:layout_height="match_parent"/>
 
             <ImageView
+                android:id="@+id/btn_delete"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:src="@drawable/delete"
                 android:layout_margin="6dp"
                 android:layout_height="match_parent"/>
-
         </LinearLayout>
 
     </LinearLayout>

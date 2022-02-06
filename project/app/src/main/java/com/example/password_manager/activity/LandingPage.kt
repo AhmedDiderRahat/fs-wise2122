@@ -33,7 +33,7 @@ import kotlinx.coroutines.withContext
 * Ahmed Dider Rahat- 4 th Feb 2022
 */
 
-class LandingPage : AppCompatActivity() {
+class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
     private val TAG = "LandingScreen"
 
     lateinit var binding: ActivityLandingPageBinding
@@ -46,6 +46,7 @@ class LandingPage : AppCompatActivity() {
     lateinit var recyclerView: RecyclerView
     lateinit var dataList: ArrayList<StoreData>
     lateinit var dataAdapter: StoreDataAdapter
+    lateinit var cryptoObj: AESEncryption
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,18 +67,20 @@ class LandingPage : AppCompatActivity() {
         recyclerView.setHasFixedSize(true)
         dataList = arrayListOf()
 
-        dataAdapter = StoreDataAdapter(dataList)
+        dataAdapter = StoreDataAdapter(dataList, this)
         recyclerView.adapter = dataAdapter
+
+        cryptoObj = AESEncryption()
 
         // load user data
         loadUserName()
 
         binding.btnLogout.setOnClickListener {
-            showDialog()
+            showDialog("logout", -1)
         }
 
         binding.btnAddNew.setOnClickListener {
-            addNewPageInit()
+            addNewPageInit(true, "", "", "")
         }
 
         loadAppData()
@@ -95,14 +98,9 @@ class LandingPage : AppCompatActivity() {
             withContext(Dispatchers.Main){
                 for (document in querySnapshot.documents){
                     val storeData = document.toObject<StoreData>()
-                    //if (storeData != null) {
                     if (storeData != null) {
                         dataList.add(storeData)
                     }
-                    //}
-                    //Log.d(TAG, "loadAppData: ${document.data}")
-                    //Log.d(TAG, "loadAppData: ${storeData.toString()}")
-                    //document.toObject(StoreData::class.java)?.let { dataList.add(it) }
                 }
 
                 Log.d(TAG, "loadAppData: ${dataList.size}")
@@ -115,12 +113,18 @@ class LandingPage : AppCompatActivity() {
     }
 
     // show a dialog for logout the user
-    private fun showDialog() {
+    private fun showDialog(type: String, index: Int) {
         val dialogClickListener =
             DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        logoutProcess()
+
+                        if (type.equals("logout")) {
+                            logoutProcess()
+                        }else{
+                            deleteData(index)
+                        }
+
                         dialog.dismiss()
                     }
                     DialogInterface.BUTTON_NEGATIVE -> {
@@ -129,9 +133,37 @@ class LandingPage : AppCompatActivity() {
                 }
             }
 
+
+        val title = if (title.equals("logout")) "Want to Logout?" else "Want to delete?"
+
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Want to Logout?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage(title).setPositiveButton("Yes", dialogClickListener)
             .setNegativeButton("No", dialogClickListener).show()
+    }
+
+    // process delete item
+    private fun deleteData(index: Int) = CoroutineScope(Dispatchers.IO).launch {
+        var storeData: StoreData = dataList.get(index)
+        val dataQuery = userCollectionRef
+                            .whereEqualTo(ConfigurationConstant.UID, USER_ID)
+                            .whereEqualTo(ConfigurationConstant.SITE, storeData.site_name)
+                            .get().await()
+
+        if (dataQuery.documents.isNotEmpty()){
+            for (document in dataQuery){
+                try{
+                    userCollectionRef.document(document.id).delete().await()
+                    dataList.remove(storeData)
+
+                    withContext(Dispatchers.Main){
+                        dataAdapter.notifyDataSetChanged()
+                        Toast.makeText(this@LandingPage, "Successfully deleted!", Toast.LENGTH_SHORT).show()
+                    }
+                }catch (e: Exception){
+                    Log.e(TAG, "deleteData: ${e.toString()}")
+                }
+            }
+        }
     }
 
     // Process all logout procedure
@@ -173,8 +205,33 @@ class LandingPage : AppCompatActivity() {
     }
 
     //go-to add new page page
-    private fun addNewPageInit(){
+    private fun addNewPageInit(isEditEnable: Boolean, site: String, u_name: String, password: String){
         val intent = Intent(this, AddNewScreen::class.java)
+
+        intent.putExtra(ConfigurationConstant.B_IS_EDIT, isEditEnable)
+        intent.putExtra(ConfigurationConstant.B_SITE, site)
+        intent.putExtra(ConfigurationConstant.B_UNAME, u_name)
+        intent.putExtra(ConfigurationConstant.B_PASSWORD, password)
         startActivity(intent)
+    }
+    
+
+    override fun onDeleteClick(storeData: StoreData) {
+        var index = dataList.indexOf(storeData)
+        showDialog("delete", index)
+    }
+
+    override fun onViewClick(sd: StoreData) {
+
+        var plain_name = sd.user_name?.let { cryptoObj.decryption(AES_KEY, it) }
+        var plain_password = sd.password?.let { cryptoObj.decryption(AES_KEY, it) }
+
+        if (plain_password != null) {
+            sd.site_name?.let {
+                if (plain_name != null) {
+                    addNewPageInit(false, it, plain_name, plain_password)
+                }
+            }
+        }
     }
 }

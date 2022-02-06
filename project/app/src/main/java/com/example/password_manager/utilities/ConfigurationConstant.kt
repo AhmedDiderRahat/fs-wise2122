@@ -22,4 +22,12 @@ object ConfigurationConstant {
 
     // user_id for all-data-storage
     const val UID = "user_id"
+    const val SITE = "site_name"
+
+
+    // activity bundle
+    const val B_IS_EDIT = "edit_mode"
+    const val B_SITE = "site_name"
+    const val B_UNAME = "user_name"
+    const val B_PASSWORD = "password"
 }
