@@ -25,3 +25,8 @@ workflows:
   say-hello-workflow:
     jobs:
       - say-hello
+
+before_install:
+  - pwd
+  - ls -la
+  - chmod +x /.gradlew 
