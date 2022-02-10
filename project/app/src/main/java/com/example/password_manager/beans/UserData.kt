@@ -6,8 +6,8 @@ package com.example.password_manager.beans
 */
 
 data class UserData(
-    var first_name: String,
-    var last_name: String,
-    var email: String,
-    var password: String
+    final var first_name: String,
+    final var last_name: String,
+    final var email: String,
+    final var password: String
 )

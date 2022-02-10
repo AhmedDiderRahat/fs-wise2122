@@ -134,7 +134,7 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
             }
 
 
-        val title = if (title.equals("logout")) "Want to Logout?" else "Want to delete?"
+        val title = if (type.equals("logout")) "Want to Logout?" else "Want to delete?"
 
         val builder = AlertDialog.Builder(this)
         builder.setMessage(title).setPositiveButton("Yes", dialogClickListener)
