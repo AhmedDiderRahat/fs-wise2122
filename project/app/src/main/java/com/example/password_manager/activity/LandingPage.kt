@@ -57,7 +57,8 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
         val view: View = binding.root
         setContentView(view)
 
-        sharedPreferences = getSharedPreferences(ConfigurationConstant.LOGIN_PREFERENCE, MODE_PRIVATE)
+        sharedPreferences =
+            getSharedPreferences(ConfigurationConstant.LOGIN_PREFERENCE, MODE_PRIVATE)
         editor = sharedPreferences.edit()
         AES_KEY = sharedPreferences.getString(ConfigurationConstant.CRYPTO_KEY, "").toString()
         USER_ID = sharedPreferences.getString(ConfigurationConstant.USER_ID, "").toString()
@@ -96,8 +97,8 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
 
             Log.d(TAG, "loadAppData: ${querySnapshot.size()}")
 
-            withContext(Dispatchers.Main){
-                for (document in querySnapshot.documents){
+            withContext(Dispatchers.Main) {
+                for (document in querySnapshot.documents) {
                     val storeData = document.toObject<StoreData>()
                     if (storeData != null) {
                         dataList.add(storeData)
@@ -108,7 +109,7 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
 
                 dataAdapter.notifyDataSetChanged()
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e(TAG, "loadAppDataError: ${e.toString()}")
         }
     }
@@ -122,7 +123,7 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
 
                         if (type.equals("logout")) {
                             logoutProcess()
-                        }else{
+                        } else {
                             deleteData(index)
                         }
 
@@ -133,7 +134,6 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
                     }
                 }
             }
-
 
         val title = if (type.equals("logout")) "Want to Logout?" else "Want to delete?"
 
@@ -146,21 +146,25 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
     private fun deleteData(index: Int) = CoroutineScope(Dispatchers.IO).launch {
         var storeData: StoreData = dataList.get(index)
         val dataQuery = userCollectionRef
-                            .whereEqualTo(ConfigurationConstant.UID, USER_ID)
-                            .whereEqualTo(ConfigurationConstant.SITE, storeData.site_name)
-                            .get().await()
+            .whereEqualTo(ConfigurationConstant.UID, USER_ID)
+            .whereEqualTo(ConfigurationConstant.SITE, storeData.site_name)
+            .get().await()
 
-        if (dataQuery.documents.isNotEmpty()){
-            for (document in dataQuery){
-                try{
+        if (dataQuery.documents.isNotEmpty()) {
+            for (document in dataQuery) {
+                try {
                     userCollectionRef.document(document.id).delete().await()
                     dataList.remove(storeData)
 
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
                         dataAdapter.notifyDataSetChanged()
-                        Toast.makeText(this@LandingPage, "Successfully deleted!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LandingPage,
+                            "Successfully deleted!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     Log.e(TAG, "deleteData: ${e.toString()}")
                 }
             }
@@ -183,7 +187,7 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
     private fun loadUserName() {
         try {
             var emailCipher = sharedPreferences.getString(ConfigurationConstant.USER_ID, "")
-            
+
             var key = sharedPreferences.getString(ConfigurationConstant.CRYPTO_KEY, "")
             var decryptionObject = AESEncryption()
 
@@ -197,22 +201,27 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
                 Log.d(TAG, "loadUserNameRating: ${userNamePrediction.getNameRating()}")
             }
 
-            
+
             binding.tvUserName.text = email.toString()
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e(TAG, "loadUserNameError: ${toString()}")
         }
     }
 
     //go-to login page
-    private fun loginPageInit(){
+    private fun loginPageInit() {
         val intent = Intent(this, LogIn::class.java)
         startActivity(intent)
         finish()
     }
 
     //go-to add new page page
-    private fun addNewPageInit(isEditEnable: Boolean, site: String, u_name: String, password: String){
+    private fun addNewPageInit(
+        isEditEnable: Boolean,
+        site: String,
+        u_name: String,
+        password: String
+    ) {
         val intent = Intent(this, AddNewScreen::class.java)
 
         intent.putExtra(ConfigurationConstant.B_IS_EDIT, isEditEnable)
@@ -221,13 +230,14 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
         intent.putExtra(ConfigurationConstant.B_PASSWORD, password)
         startActivity(intent)
     }
-    
 
+    // method from interface: pass the data to delete
     override fun onDeleteClick(storeData: StoreData) {
         var index = dataList.indexOf(storeData)
         showDialog("delete", index)
     }
 
+    // method from interface: pass the data to show
     override fun onViewClick(sd: StoreData) {
 
         var plain_name = sd.user_name?.let { cryptoObj.decryption(AES_KEY, it) }
