@@ -17,6 +17,7 @@ import com.example.password_manager.adapter.StoreDataAdapter
 import com.example.password_manager.beans.StoreData
 
 import com.example.password_manager.databinding.ActivityLandingPageBinding
+import com.example.password_manager.dsl.UserNamePrediction
 import com.example.password_manager.utilities.AESEncryption
 
 import com.google.firebase.firestore.ktx.firestore
@@ -190,6 +191,12 @@ class LandingPage : AppCompatActivity(), StoreDataAdapter.OnItemClickListener {
 
             var email = emailCipher?.let { decryptionObject.decryption(AES_KEY, it) }
             Log.d(TAG, "loadUserName: $email")
+
+            var userNamePrediction = email?.let { UserNamePrediction(it) }
+            if (userNamePrediction != null) {
+                Log.d(TAG, "loadUserNameRating: ${userNamePrediction.getNameRating()}")
+            }
+
             
             binding.tvUserName.text = email.toString()
         }catch (e: Exception){

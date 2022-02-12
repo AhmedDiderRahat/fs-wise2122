@@ -62,22 +62,21 @@ class SplashScreen : AppCompatActivity() {
         launchNextScreen(intent)
     }
 
-    private fun getRandomString(length: Int) : String {
-        val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"
-        return (1..length)
-            .map { charset.random() }
-            .joinToString("")
-    }
-
     private fun getAESKey(): String? {
         return sharedPref.getString(ConfigurationConstant.CRYPTO_KEY, "")
     }
 
+    // key generate
+    val key_generator: (Int) -> String = { a -> ((1..a)
+        .map { "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789".random() }
+        .joinToString(""))}
+
     private fun encryptionProcess(){
         // check key is stored
-        if (getAESKey().equals("")){
-            // key generate
-            var key = getRandomString(16)
+        if (getAESKey()?.isNotEmpty() == false){
+
+            val key = key_generator(16)
+
             Log.d(TAG, "encryptionProcess: $key")
             editor.apply{
                 putString(ConfigurationConstant.CRYPTO_KEY, key)
@@ -88,4 +87,3 @@ class SplashScreen : AppCompatActivity() {
         withCoroutine(ConfigurationConstant.SPLASH_SCREEN_DURATION)
     }
 }
-
